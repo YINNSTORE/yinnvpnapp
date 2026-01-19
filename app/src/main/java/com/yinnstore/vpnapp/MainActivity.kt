@@ -3,16 +3,13 @@ package com.yinnstore.vpnapp
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.navigation.NavigationView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -27,67 +24,41 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val drawer = findViewById<DrawerLayout>(R.id.drawer)
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        val nav = findViewById<NavigationView>(R.id.navView)
-        val tv = findViewById<TextView>(R.id.tvHome)
-
-        toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_drawer) {
-                drawer.openDrawer(GravityCompat.END)
-                true
-            } else false
-        }
-
-        nav.setNavigationItemSelectedListener { mi ->
-            when (mi.itemId) {
-                R.id.menu_dark_mode -> {
-                    mi.isChecked = !mi.isChecked
-                    AppCompatDelegate.setDefaultNightMode(
-                        if (mi.isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-                    )
-                    drawer.closeDrawer(GravityCompat.END)
-                    true
-                }
-                R.id.menu_logout -> {
-                    doLogout(session)
-                    drawer.closeDrawer(GravityCompat.END)
-                    true
-                }
-                else -> false
-            }
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
+        // cek token via /me.php (backend kamu)
+        scope.launch {
             try {
-                val res = Api.me(token)
-                val ok = res.optBoolean("ok", false)
-                val user = res.optJSONObject("user")
-                withContext(Dispatchers.Main) {
-                    if (ok && user != null) {
-                        tv.text = "Halo, " + user.optString("name", "User")
-                    } else {
-                        Toast.makeText(this@MainActivity, "Session habis, login lagi", Toast.LENGTH_SHORT).show()
-                        session.clear()
-                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                        finish()
-                    }
+                val res = withContext(Dispatchers.IO) { Api.me(token) }
+                if (!res.optBoolean("ok", false)) {
+                    session.clear()
+                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                    finish()
+                    return@launch
                 }
             } catch (_: Throwable) {
-                // ignore
+                // kalau jaringan error, biarin user tetap masuk
             }
         }
+
+        val tv = findViewById<TextView>(R.id.tvPage)
+        val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
+
+        nav.setOnItemSelectedListener { item ->
+            tv.text = when (item.itemId) {
+                R.id.nav_home -> "Home"
+                R.id.nav_deposit -> "Deposit"
+                R.id.nav_buy -> "Beli VPN"
+                R.id.nav_account -> "Akun"
+                R.id.nav_control -> "Control Panel"
+                else -> "Home"
+            }
+            true
+        }
+
+        nav.selectedItemId = R.id.nav_home
     }
 
-    private fun doLogout(session: SessionStore) {
-        val token = session.token() ?: ""
-        CoroutineScope(Dispatchers.IO).launch {
-            try { Api.logout(token) } catch (_: Throwable) {}
-            withContext(Dispatchers.Main) {
-                session.clear()
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                finish()
-            }
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 }

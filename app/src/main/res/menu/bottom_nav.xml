@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_home" android:title="Home" android:icon="@drawable/ic_home"/>
+    <item android:id="@+id/nav_deposit" android:title="Deposit" android:icon="@drawable/ic_wallet"/>
+    <item android:id="@+id/nav_buy" android:title="Beli VPN" android:icon="@drawable/ic_cart"/>
+    <item android:id="@+id/nav_account" android:title="Akun" android:icon="@drawable/ic_user"/>
+    <item android:id="@+id/nav_control" android:title="Control" android:icon="@drawable/ic_settings"/>
+</menu>
