@@ -3,9 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-import java.util.Properties
-import java.io.FileInputStream
-
 android {
     namespace "com.yinnstore.vpnapp"
     compileSdk 34
@@ -19,34 +16,12 @@ android {
     }
 
     buildFeatures {
-        buildConfig true
-
         compose true
     }
 
     composeOptions {
         kotlinCompilerExtensionVersion "1.5.14"
     }
-
-    kotlinOptions {
-    }
-
-
-    compileOptions {
-
-        sourceCompatibility JavaVersion.VERSION_17
-
-        targetCompatibility JavaVersion.VERSION_17
-
-    }
-
-
-    kotlin {
-
-        jvmToolchain(17)
-
-    }
-
 
     kotlinOptions {
         jvmTarget = "17"
@@ -70,8 +45,8 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile(
                 "proguard-android-optimize.txt"
             ), "proguard-rules.pro"
@@ -81,19 +56,14 @@ android {
         }
     }
 }
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
+
+}
 
 dependencies {
-    implementation "com.squareup.okhttp3:okhttp:4.12.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
-    implementation "androidx.appcompat:appcompat:1.7.0"
-    implementation "com.google.android.material:material:1.12.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.2.0"
-    implementation "androidx.core:core-ktx:1.13.1"
-
-    implementation "androidx.datastore:datastore-preferences:1.1.1"
-
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.8.7"
-
     implementation(platform(libs.compose.bom))
     implementation(libs.core.ktx)
     implementation(libs.activity.compose)
@@ -101,9 +71,20 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.material3)
-    implementation(libs.material.icons.extended)
+
+    // 🔥 ICON RINGAN
+    implementation("androidx.compose.material:material-icons-core")
 
     implementation(libs.nav.compose)
-
     debugImplementation(libs.compose.ui.tooling)
 }
+
+import java.util.Properties
+import java.io.FileInputStream
+
+def signingProps = new Properties()
+def signingFile = rootProject.file("signing.properties")
+if (signingFile.exists()) {
+    signingProps.load(new FileInputStream(signingFile))
+}
+

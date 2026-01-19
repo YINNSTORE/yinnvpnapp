@@ -1,64 +1,92 @@
 package com.yinnstore.vpnapp
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.yinnstore.vpnapp.ui.theme.YinnVPNTheme
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.*
 
-class MainActivity : ComponentActivity() {
-    private val appViewModel: AppViewModel by viewModels()
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        setContent {
-            val darkMode by appViewModel.darkMode.collectAsStateWithLifecycle()
-            val navController = rememberNavController()
+        val session = SessionStore(this)
+        val token = session.token()
+        if (token.isNullOrBlank()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
 
-            YinnVPNTheme(darkMode = darkMode) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = Routes.Auth
-                    ) {
-                        composable(Routes.Auth) {
-                            AuthFlow(
-                                onSuccess = {
-                                    navController.navigate(Routes.Main) {
-                                        popUpTo(Routes.Auth) { inclusive = true }
-                                        launchSingleTop = true
-                                    }
-                                }
-                            )
-                        }
+        val drawer = findViewById<DrawerLayout>(R.id.drawer)
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        val nav = findViewById<NavigationView>(R.id.navView)
+        val tv = findViewById<TextView>(R.id.tvHome)
 
-                        composable(Routes.Main) {
-                            MainScaffold(
-                                navController = navController,
-                                darkMode = darkMode,
-                                onToggleDarkMode = { appViewModel.setDarkMode(it) }
-                            ) { mod ->
-                                Box(modifier = mod.fillMaxSize()) {
-                                    MainTabs()
-                                }
-                            }
-                        }
+        toolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.action_drawer) {
+                drawer.openDrawer(GravityCompat.END)
+                true
+            } else false
+        }
+
+        nav.setNavigationItemSelectedListener { mi ->
+            when (mi.itemId) {
+                R.id.menu_dark_mode -> {
+                    mi.isChecked = !mi.isChecked
+                    AppCompatDelegate.setDefaultNightMode(
+                        if (mi.isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                    )
+                    drawer.closeDrawer(GravityCompat.END)
+                    true
+                }
+                R.id.menu_logout -> {
+                    doLogout(session)
+                    drawer.closeDrawer(GravityCompat.END)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val res = Api.me(token)
+                val ok = res.optBoolean("ok", false)
+                val user = res.optJSONObject("user")
+                withContext(Dispatchers.Main) {
+                    if (ok && user != null) {
+                        tv.text = "Halo, " + user.optString("name", "User")
+                    } else {
+                        Toast.makeText(this@MainActivity, "Session habis, login lagi", Toast.LENGTH_SHORT).show()
+                        session.clear()
+                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                        finish()
                     }
                 }
+            } catch (_: Throwable) {
+                // ignore
+            }
+        }
+    }
+
+    private fun doLogout(session: SessionStore) {
+        val token = session.token() ?: ""
+        CoroutineScope(Dispatchers.IO).launch {
+            try { Api.logout(token) } catch (_: Throwable) {}
+            withContext(Dispatchers.Main) {
+                session.clear()
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
             }
         }
     }

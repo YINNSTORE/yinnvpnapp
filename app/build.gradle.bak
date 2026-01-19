@@ -1,0 +1,97 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
+
+android {
+    namespace "com.yinnstore.vpnapp"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.yinnstore.vpnapp"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildFeatures { compose true }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.5.14"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile(
+                "proguard-android-optimize.txt"
+            ), "proguard-rules.pro"
+        }
+    }
+
+    // 🔥 APK lebih kecil
+    splits {
+        abi {
+            enable true
+            reset()
+            include "arm64-v8a", "armeabi-v7a"
+            universalApk false
+        }
+    }
+}
+
+dependencies {
+    implementation(platform(libs.compose.bom))
+    implementation(libs.core.ktx)
+    implementation(libs.activity.compose)
+
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.material3)
+
+    // 🔥 ICON RINGAN
+    implementation("androidx.compose.material:material-icons-core")
+
+    implementation(libs.nav.compose)
+    debugImplementation(libs.compose.ui.tooling)
+}
+
+import java.util.Properties
+import java.io.FileInputStream
+
+def signingProps = new Properties()
+def signingFile = rootProject.file("signing.properties")
+if (signingFile.exists()) {
+    signingProps.load(new FileInputStream(signingFile))
+}
+
+android {
+    signingConfigs {
+        release {
+            storeFile file(signingProps["keystore.path"])
+            storePassword signingProps["keystore.password"]
+            keyAlias signingProps["key.alias"]
+            keyPassword signingProps["key.password"]
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
