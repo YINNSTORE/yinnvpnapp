@@ -71,3 +71,10 @@ fun LoginScreen(
         }
     }
 }
+
+@androidx.compose.runtime.Composable
+fun AuthFlow(
+    onSuccess: () -> Unit
+) {
+    LoginScreen(onLogin = onSuccess, onRegister = {})
+}

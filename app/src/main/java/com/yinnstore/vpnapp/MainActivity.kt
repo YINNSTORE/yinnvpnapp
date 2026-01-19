@@ -3,45 +3,63 @@ package com.yinnstore.vpnapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.yinnstore.vpnapp.ui.theme.YinnTheme
+import com.yinnstore.vpnapp.ui.theme.YinnVPNTheme
 
 class MainActivity : ComponentActivity() {
+    private val appViewModel: AppViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
-            YinnTheme {
-                AppNav()
-            }
-        }
-    }
-}
+            val darkMode by appViewModel.darkMode.collectAsStateWithLifecycle()
+            val navController = rememberNavController()
 
-sealed class Route(val r: String) {
-    object Login : Route("login")
-    object Main : Route("main")
-}
+            YinnVPNTheme(darkMode = darkMode) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = Routes.Auth
+                    ) {
+                        composable(Routes.Auth) {
+                            AuthFlow(
+                                onSuccess = {
+                                    navController.navigate(Routes.Main) {
+                                        popUpTo(Routes.Auth) { inclusive = true }
+                                        launchSingleTop = true
+                                    }
+                                }
+                            )
+                        }
 
-@Composable
-fun AppNav() {
-    val nav = rememberNavController()
-
-    NavHost(navController = nav, startDestination = Route.Login.r) {
-        composable(Route.Login.r) {
-            LoginScreen(
-                onLoginSuccess = {
-                    nav.navigate(Route.Main.r) {
-                        popUpTo(Route.Login.r) { inclusive = true }
+                        composable(Routes.Main) {
+                            MainScaffold(
+                                navController = navController,
+                                darkMode = darkMode,
+                                onToggleDarkMode = { appViewModel.setDarkMode(it) }
+                            ) { mod ->
+                                Box(modifier = mod.fillMaxSize()) {
+                                    MainTabs()
+                                }
+                            }
+                        }
                     }
-                },
-                onGoRegister = { /* TODO */ }
-            )
-        }
-        composable(Route.Main.r) {
-            MainScaffold()
+                }
+            }
         }
     }
 }

@@ -81,6 +81,10 @@ android {
 }
 
 dependencies {
+    implementation "androidx.datastore:datastore-preferences:1.1.1"
+
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.8.7"
+
     implementation(platform(libs.compose.bom))
     implementation(libs.core.ktx)
     implementation(libs.activity.compose)

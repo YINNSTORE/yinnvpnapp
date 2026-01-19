@@ -1,28 +1,58 @@
 package com.yinnstore.vpnapp.ui.theme
 
-import androidx.compose.material3.*
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import com.yinnstore.vpnapp.ThemeState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 
-private val LightColors = lightColorScheme(
-    primary = Navy2,
-    secondary = Sky,
-    background = BgLight,
-    surface = BgLight
+private fun lightScheme(): ColorScheme = lightColorScheme(
+    primary = Navy,
+    background = LightBg,
+    surface = Color(0xFFF7F8FB),
+    onPrimary = Color.White,
+    onBackground = TextDarkNavy,
+    onSurface = TextDarkNavy
 )
 
-private val DarkColors = darkColorScheme(
-    primary = Sky,
-    secondary = Sky,
-    background = Navy,
-    surface = Navy
+private fun darkScheme(): ColorScheme = darkColorScheme(
+    primary = Navy,
+    background = DarkNavy,
+    surface = Color(0xFF0B203F),
+    onPrimary = Color.White,
+    onBackground = Color(0xFFE9EEF8),
+    onSurface = Color(0xFFE9EEF8)
 )
 
 @Composable
-fun YinnTheme(content: @Composable () -> Unit) {
+fun YinnVPNTheme(
+    darkMode: Boolean,
+    content: @Composable () -> Unit
+) {
+    val target = if (darkMode) darkScheme() else lightScheme()
+
+    val primary by animateColorAsState(targetValue = target.primary, animationSpec = tween(220), label = "primary")
+    val background by animateColorAsState(targetValue = target.background, animationSpec = tween(220), label = "background")
+    val surface by animateColorAsState(targetValue = target.surface, animationSpec = tween(220), label = "surface")
+    val onPrimary by animateColorAsState(targetValue = target.onPrimary, animationSpec = tween(220), label = "onPrimary")
+    val onBackground by animateColorAsState(targetValue = target.onBackground, animationSpec = tween(220), label = "onBackground")
+    val onSurface by animateColorAsState(targetValue = target.onSurface, animationSpec = tween(220), label = "onSurface")
+
+    val scheme = target.copy(
+        primary = primary,
+        background = background,
+        surface = surface,
+        onPrimary = onPrimary,
+        onBackground = onBackground,
+        onSurface = onSurface
+    )
+
     MaterialTheme(
-        colorScheme = if (ThemeState.isDark.value) DarkColors else LightColors,
-        typography = Typography(),
+        colorScheme = scheme,
         content = content
     )
 }
