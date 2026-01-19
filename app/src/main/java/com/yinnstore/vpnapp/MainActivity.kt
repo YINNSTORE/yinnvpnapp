@@ -34,6 +34,9 @@ class MainActivity : AppCompatActivity() {
         val nav = findViewById<NavigationView>(R.id.navView)
         val bottom = findViewById<BottomNavigationView>(R.id.bottomNav)
 
+        val isAdmin = (session.role()?.lowercase() == "admin")
+        bottom.menu.findItem(R.id.nav_control)?.isVisible = isAdmin
+
         // hamburger kanan atas
         toolbar.setOnMenuItemClickListener { item ->
             if (item.itemId == R.id.action_drawer) {

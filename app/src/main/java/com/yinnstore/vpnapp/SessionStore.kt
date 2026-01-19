@@ -10,7 +10,46 @@ class SessionStore(ctx: Context) {
 
     fun setToken(token: String, expiresAt: String?) {
         sp.edit().putString("token", token).putString("expires_at", expiresAt).apply()
-    }
+    
+    private val KEY_ROLE = "role"
 
-    fun clear() { sp.edit().clear().apply() }
+    fun role(): String? = sp.getString(KEY_ROLE, null)
+
+    fun setRole(role: String?) {
+        if (role.isNullOrBlank()) {
+            sp.edit().remove(KEY_ROLE).apply()
+        } else {
+            sp.edit().putString(KEY_ROLE, role).apply()
+        }
+    }
 }
+
+
+    fun clear() { sp.edit().clear().apply() 
+    private val KEY_ROLE = "role"
+
+    fun role(): String? = sp.getString(KEY_ROLE, null)
+
+    fun setRole(role: String?) {
+        if (role.isNullOrBlank()) {
+            sp.edit().remove(KEY_ROLE).apply()
+        } else {
+            sp.edit().putString(KEY_ROLE, role).apply()
+        }
+    }
+}
+
+
+    private val KEY_ROLE = "role"
+
+    fun role(): String? = sp.getString(KEY_ROLE, null)
+
+    fun setRole(role: String?) {
+        if (role.isNullOrBlank()) {
+            sp.edit().remove(KEY_ROLE).apply()
+        } else {
+            sp.edit().putString(KEY_ROLE, role).apply()
+        }
+    }
+}
+
