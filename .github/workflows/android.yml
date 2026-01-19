@@ -4,62 +4,81 @@ on:
   workflow_dispatch:
     inputs:
       version_name:
-        description: "Version name aplikasi (contoh: 1.0.1)"
+        description: "Version name (contoh: 1.0.1)"
         required: true
         default: "1.0.0"
 
       upload_release:
-        description: "Upload ke GitHub Release?"
+        description: "Upload to GitHub Release?"
         required: true
         type: choice
+        options: ["false", "true"]
         default: "false"
-        options:
-          - "false"
-          - "true"
 
 jobs:
-  build:
+  BuildRelease:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup JDK 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-          cache: gradle
 
-      # WAJIB: decode keystore sebelum build
-      - name: Decode Keystore
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # 🔐 Decode keystore (ROOT, bukan app/)
+      - name: Decode release keystore
+        shell: bash
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
-          ls -la app/keystore.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > release.keystore
+          ls -lah release.keystore
 
-      - name: Set App Version
+      # 🔍 Verifikasi keystore (WAJIB)
+      - name: Verify keystore
+        shell: bash
         run: |
-          sed -i "s/versionName \".*\"/versionName \"${{ github.event.inputs.version_name }}\"/" app/build.gradle
+          keytool -list -keystore release.keystore \
+            -alias "${{ secrets.KEY_ALIAS }}" \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" >/dev/null
+          echo "Keystore OK ✅"
 
-      - name: Build Release APK
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      # 🧾 Buat signing.properties
+      - name: Create signing.properties
+        shell: bash
         run: |
-          chmod +x gradlew
-          ./gradlew assembleRelease
+          cat > signing.properties <<EOF2
+          keystore.path=release.keystore
+          keystore.password=${{ secrets.KEYSTORE_PASSWORD }}
+          key.alias=${{ secrets.KEY_ALIAS }}
+          key.password=${{ secrets.KEY_PASSWORD }}
+          EOF2
+          cat signing.properties
 
-      - name: Upload APK Artifact
+      - name: Set version
+        run: |
+          sed -i "s/versionName \".*\"/versionName \"${{ inputs.version_name }}\"/" app/build.gradle
+
+      - name: Build Release
+        run: ./gradlew --no-daemon assembleRelease
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: app/build/outputs/apk/release/*.apk
 
       - name: Upload GitHub Release
-        if: ${{ github.event.inputs.upload_release == 'true' }}
+        if: ${{ inputs.upload_release == 'true' && success() }}
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ github.event.inputs.version_name }}
+          tag_name: v${{ inputs.version_name }}
           files: app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
