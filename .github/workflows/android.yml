@@ -17,7 +17,6 @@ on:
           - "true"
         default: "false"
 
-# 🔑 WAJIB agar bisa bikin GitHub Release
 permissions:
   contents: write
 
@@ -68,17 +67,28 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon clean assembleRelease
 
+      # 🔥 AMBIL APK YANG BENAR (PALING BESAR)
+      - name: Pick final APK
+        run: |
+          echo "APK outputs:"
+          ls -lah app/build/outputs/apk/release/ || true
+
+          APK="$(ls -S app/build/outputs/apk/release/*.apk | head -n 1)"
+          echo "Picked APK: $APK"
+
+          cp "$APK" "YinnVPN-v${{ inputs.version_name }}.apk"
+          ls -lah "YinnVPN-v${{ inputs.version_name }}.apk"
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: app/build/outputs/apk/release/*.apk
+          name: YinnVPN-v${{ inputs.version_name }}
+          path: YinnVPN-v${{ inputs.version_name }}.apk
 
-      # 🔥 CLEAN GitHub Release
       - name: Publish GitHub Release
         if: ${{ inputs.upload_release == 'true' }}
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ inputs.version_name }}
-          files: app/build/outputs/apk/release/*.apk
+          files: YinnVPN-v${{ inputs.version_name }}.apk
           generate_release_notes: true
