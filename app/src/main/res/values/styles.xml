@@ -10,7 +10,7 @@
 
         <!-- bikin transisi theme lebih halus -->
         <item name="android:windowAnimationStyle">@style/WindowAnim</item>
-        <item name="materialButtonStyle">/AppButton</item>
+        <item name="materialButtonStyle">@style/AppButton</item>
 </style>
 
     <style name="WindowAnim">
@@ -18,3 +18,8 @@
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
 </resources>
+
+<!-- Rounded button default -->
+<style name="AppButton" parent="Widget.MaterialComponents.Button">
+    <item name="cornerRadius">16dp</item>
+</style>
