@@ -11,9 +11,7 @@ object Api {
     private val client = OkHttpClient()
 
     private fun base(): String {
-        val fromBuild = try { BuildConfig.API_BASE_URL } catch (_: Throwable) { "" }
-        val b = (fromBuild ?: "").trim()
-        return if (b.isNotEmpty()) b.trimEnd('/') else "https://yinnhosting.serv00.net/api"
+        return ApiBase.BASE_URL_FALLBACK.trimEnd('/')
     }
 
     private fun post(url: String, bodyObj: JSONObject, token: String? = null): JSONObject {
