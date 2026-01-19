@@ -10,4 +10,6 @@
     <!-- Basics -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="accent_blue">@color/primary_accent</color>
+    <color name="text_night">@android:color/white</color>
 </resources>
