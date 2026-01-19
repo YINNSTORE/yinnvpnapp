@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         // bottom nav (sementara: toast biar gak error kalau view content belum siap)
         bottom.setOnItemSelectedListener { item ->
             when (item.itemId) {
+                R.id.nav_admin_dynamic -> tv.text = "Admin"
                 R.id.nav_home -> Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
                 R.id.nav_wallet -> Toast.makeText(this, "Wallet", Toast.LENGTH_SHORT).show()
                 R.id.nav_cart -> Toast.makeText(this, "Cart", Toast.LENGTH_SHORT).show()
