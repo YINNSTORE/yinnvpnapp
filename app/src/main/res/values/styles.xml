@@ -10,7 +10,8 @@
 
         <!-- bikin transisi theme lebih halus -->
         <item name="android:windowAnimationStyle">@style/WindowAnim</item>
-    </style>
+        <item name="materialButtonStyle">/AppButton</item>
+</style>
 
     <style name="WindowAnim">
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
