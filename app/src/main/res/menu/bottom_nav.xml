@@ -10,15 +10,8 @@
         android:id="@+id/nav_wallet"
         android:icon="@drawable/ic_wallet"
         android:title="Wallet" />
-
-    <item
-        android:id="@+id/nav_control"
-        android:icon="@drawable/ic_admin"
         android:title="Control" />
 
     <item
         android:id="@+id/nav_user"
         android:icon="@drawable/ic_user"
-        android:title="Account" />
-
-</menu>
