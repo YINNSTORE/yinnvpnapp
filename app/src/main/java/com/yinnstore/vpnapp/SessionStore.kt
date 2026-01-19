@@ -6,50 +6,24 @@ class SessionStore(ctx: Context) {
     private val sp = ctx.getSharedPreferences("session", Context.MODE_PRIVATE)
 
     fun token(): String? = sp.getString("token", null)
-    fun expiresAt(): String? = sp.getString("expires_at", null)
+    fun email(): String? = sp.getString("email", null)
+    fun role(): String? = sp.getString("role", null) // "admin" / "user" (kalau backend ngirim)
 
-    fun setToken(token: String, expiresAt: String?) {
-        sp.edit().putString("token", token).putString("expires_at", expiresAt).apply()
-    
-    private val KEY_ROLE = "role"
+    fun setToken(token: String, expiresAt: String? = null) {
+        sp.edit()
+            .putString("token", token)
+            .putString("expires_at", expiresAt)
+            .apply()
+    }
 
-    fun role(): String? = sp.getString(KEY_ROLE, null)
+    fun setProfile(email: String?, role: String?) {
+        sp.edit()
+            .putString("email", email)
+            .putString("role", role)
+            .apply()
+    }
 
-    fun setRole(role: String?) {
-        if (role.isNullOrBlank()) {
-            sp.edit().remove(KEY_ROLE).apply()
-        } else {
-            sp.edit().putString(KEY_ROLE, role).apply()
-        }
+    fun clear() {
+        sp.edit().clear().apply()
     }
 }
-
-
-    fun clear() { sp.edit().clear().apply() 
-    private val KEY_ROLE = "role"
-
-    fun role(): String? = sp.getString(KEY_ROLE, null)
-
-    fun setRole(role: String?) {
-        if (role.isNullOrBlank()) {
-            sp.edit().remove(KEY_ROLE).apply()
-        } else {
-            sp.edit().putString(KEY_ROLE, role).apply()
-        }
-    }
-}
-
-
-    private val KEY_ROLE = "role"
-
-    fun role(): String? = sp.getString(KEY_ROLE, null)
-
-    fun setRole(role: String?) {
-        if (role.isNullOrBlank()) {
-            sp.edit().remove(KEY_ROLE).apply()
-        } else {
-            sp.edit().putString(KEY_ROLE, role).apply()
-        }
-    }
-}
-

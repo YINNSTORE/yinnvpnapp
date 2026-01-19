@@ -2,7 +2,7 @@ package com.yinnstore.vpnapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -14,6 +14,16 @@ import kotlinx.coroutines.*
 class MainActivity : AppCompatActivity() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    private fun isAdmin(session: SessionStore): Boolean {
+        // PRIORITAS: role dari DB/backend (disarankan)
+        val r = session.role()?.lowercase()?.trim().orEmpty()
+        if (r == "admin") return true
+
+        // fallback sementara (kalau role belum dikirim)
+        val email = session.email()?.lowercase()?.trim().orEmpty()
+        return email == "tesreset660@gmail.com"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         UiPrefs.apply(this)
@@ -29,13 +39,11 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        val tvHome = findViewById<TextView>(R.id.tvHome)
         val drawer = findViewById<DrawerLayout>(R.id.drawer)
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        val nav = findViewById<NavigationView>(R.id.navView)
+        val navView = findViewById<NavigationView>(R.id.navView)
         val bottom = findViewById<BottomNavigationView>(R.id.bottomNav)
-
-        val isAdmin = (session.role()?.lowercase() == "admin")
-        bottom.menu.findItem(R.id.nav_control)?.isVisible = isAdmin
 
         // hamburger kanan atas
         toolbar.setOnMenuItemClickListener { item ->
@@ -45,33 +53,36 @@ class MainActivity : AppCompatActivity() {
             } else false
         }
 
-        // bottom nav (sementara: toast biar gak error kalau view content belum siap)
+        // bottom nav base
         bottom.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_admin_dynamic -> tv.text = "Admin"
-                R.id.nav_home -> Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
-                R.id.nav_wallet -> Toast.makeText(this, "Wallet", Toast.LENGTH_SHORT).show()
-                R.id.nav_cart -> Toast.makeText(this, "Cart", Toast.LENGTH_SHORT).show()
-                R.id.nav_user -> Toast.makeText(this, "Account", Toast.LENGTH_SHORT).show()
-                R.id.nav_settings -> Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+                R.id.nav_home -> tvHome.text = "Home"
+                R.id.nav_wallet -> tvHome.text = "Wallet"
+                R.id.nav_cart -> tvHome.text = "Cart"
+                R.id.nav_user -> tvHome.text = "Akun"
+                R.id.nav_settings -> tvHome.text = "Setting"
+                R.id.nav_admin_dynamic -> tvHome.text = "Admin"
             }
             true
         }
 
-        // drawer items
-        val darkItem = nav.menu.findItem(R.id.menu_dark_mode)
+        // Admin tab dynamic (tanpa XML)
+        if (isAdmin(session) && bottom.menu.findItem(R.id.nav_admin_dynamic) == null) {
+            bottom.menu.add(0, R.id.nav_admin_dynamic, 999, "Admin")
+                .setIcon(R.drawable.ic_settings) // aman pakai icon yg sudah ada dulu
+        }
+
+        // drawer: toggle mode + logout
+        val darkItem = navView.menu.findItem(R.id.menu_dark_mode)
         darkItem.isChecked = UiPrefs.isDark(this)
 
-        nav.setNavigationItemSelectedListener { mi ->
+        navView.setNavigationItemSelectedListener { mi ->
             when (mi.itemId) {
                 R.id.menu_dark_mode -> {
                     val newVal = !mi.isChecked
                     mi.isChecked = newVal
-
                     UiPrefs.setDark(this, newVal)
                     drawer.closeDrawer(GravityCompat.END)
-
-                    // smooth transition
                     window.decorView.post {
                         recreate()
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
