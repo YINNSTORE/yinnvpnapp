@@ -1,11 +1,8 @@
 package com.yinnstore.vpnapp.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import com.yinnstore.vpnapp.ThemeState
 
 private val LightColors = lightColorScheme(
     primary = Navy2,
@@ -17,17 +14,14 @@ private val LightColors = lightColorScheme(
 private val DarkColors = darkColorScheme(
     primary = Sky,
     secondary = Sky,
-    background = BgDark,
-    surface = BgDark
+    background = Navy,
+    surface = Navy
 )
 
 @Composable
-fun YinnTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
+fun YinnTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (darkTheme) DarkColors else LightColors,
+        colorScheme = if (ThemeState.isDark.value) DarkColors else LightColors,
         typography = Typography(),
         content = content
     )

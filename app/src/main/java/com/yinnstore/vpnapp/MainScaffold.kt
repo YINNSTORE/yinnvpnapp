@@ -3,71 +3,89 @@ package com.yinnstore.vpnapp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.RocketLaunch
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 
-sealed class MainTab(
-    val route: String,
-    val label: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
-) {
-    data object Home : MainTab("home", "Home", Icons.Filled.Home)
-    data object Deposit : MainTab("deposit", "Deposit", Icons.Filled.AttachMoney)
-    data object Buy : MainTab("buy", "Beli VPN", Icons.Filled.RocketLaunch)
-    data object Account : MainTab("account", "Akun", Icons.Filled.Person)
-    data object Panel : MainTab("panel", "Control Panel", Icons.Filled.Settings)
+sealed class MainTab(val route: String, val label: String, val icon: ImageVector) {
+    object Home : MainTab("home", "Home", Icons.Filled.Home)
+    object Deposit : MainTab("deposit", "Deposit", Icons.Filled.AttachMoney)
+    object Buy : MainTab("buy", "Beli VPN", Icons.Filled.RocketLaunch)
+    object Account : MainTab("account", "Akun", Icons.Filled.Person)
+    object Panel : MainTab("panel", "Control", Icons.Filled.Settings)
 }
 
 @Composable
 fun MainScaffold() {
-    val tabs = listOf(MainTab.Home, MainTab.Deposit, MainTab.Buy, MainTab.Account, MainTab.Panel)
     val nav = rememberNavController()
+    val tabs = listOf(
+        MainTab.Home,
+        MainTab.Deposit,
+        MainTab.Buy,
+        MainTab.Account,
+        MainTab.Panel
+    )
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("YinnVPN") },
+                actions = {
+                    var open by remember { mutableStateOf(false) }
+
+                    IconButton(onClick = { open = true }) {
+                        Icon(Icons.Default.Menu, null)
+                    }
+
+                    DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    if (ThemeState.isDark.value)
+                                        "🌞 Mode Siang"
+                                    else
+                                        "🌙 Mode Malam"
+                                )
+                            },
+                            onClick = {
+                                ThemeState.isDark.value = !ThemeState.isDark.value
+                                open = false
+                            }
+                        )
+                    }
+                }
+            )
+        },
         bottomBar = {
             NavigationBar {
                 val backStack by nav.currentBackStackEntryAsState()
                 val current = backStack?.destination?.route
 
-                tabs.forEach { tab ->
+                tabs.forEach {
                     NavigationBarItem(
-                        selected = current == tab.route,
+                        selected = current == it.route,
                         onClick = {
-                            nav.navigate(tab.route) {
+                            nav.navigate(it.route) {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(nav.graph.startDestinationId) { saveState = true }
+                                popUpTo(nav.graph.startDestinationId)
                             }
                         },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) }
+                        icon = { Icon(it.icon, it.label) },
+                        label = { Text(it.label) }
                     )
                 }
             }
         }
     ) { inner ->
         Box(Modifier.padding(inner)) {
-            NavHost(navController = nav, startDestination = MainTab.Home.route) {
-                composable(MainTab.Home.route) { HomeScreen() }
-                composable(MainTab.Deposit.route) { DepositScreen() }
-                composable(MainTab.Buy.route) { BuyVpnScreen() }
-                composable(MainTab.Account.route) { AccountScreen() }
-                composable(MainTab.Panel.route) { ControlPanelScreen() }
+            NavHost(nav, startDestination = MainTab.Home.route) {
+                composable("home") { HomeScreen() }
+                composable("deposit") { DepositScreen() }
+                composable("buy") { BuyVpnScreen() }
+                composable("account") { AccountScreen() }
+                composable("panel") { ControlPanelScreen() }
             }
         }
     }
