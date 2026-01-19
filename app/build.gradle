@@ -12,24 +12,34 @@ android {
         minSdk 24
         targetSdk 34
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0"
     }
 
-    buildFeatures { compose true }
+    buildFeatures {
+        compose true
+    }
 
     composeOptions {
         kotlinCompilerExtensionVersion "1.5.14"
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
         jvmTarget = "17"
     }
 
+    def signingProps = new Properties()
+    def signingFile = rootProject.file("signing.properties")
+    if (signingFile.exists()) {
+        signingProps.load(new FileInputStream(signingFile))
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(signingProps["keystore.path"])
+            storePassword signingProps["keystore.password"]
+            keyAlias signingProps["key.alias"]
+            keyPassword signingProps["key.password"]
+        }
     }
 
     buildTypes {
@@ -41,10 +51,16 @@ android {
                 "proguard-android-optimize.txt"
             ), "proguard-rules.pro"
         }
+        debug {
+            minifyEnabled false
+        }
     }
+}
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
 
-    // 🔥 APK lebih kecil
-    }
 }
 
 dependencies {
@@ -72,19 +88,3 @@ if (signingFile.exists()) {
     signingProps.load(new FileInputStream(signingFile))
 }
 
-android {
-    signingConfigs {
-        release {
-            storeFile file(signingProps["keystore.path"])
-            storePassword signingProps["keystore.password"]
-            keyAlias signingProps["key.alias"]
-            keyPassword signingProps["key.password"]
-        }
-    }
-
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
-    }
-}
