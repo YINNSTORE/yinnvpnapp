@@ -2,7 +2,7 @@ package com.yinnstore.vpnapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -29,13 +29,12 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val tv = findViewById<TextView>(R.id.tvHome)
         val drawer = findViewById<DrawerLayout>(R.id.drawer)
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         val nav = findViewById<NavigationView>(R.id.navView)
         val bottom = findViewById<BottomNavigationView>(R.id.bottomNav)
 
-        // hamburger harus kanan: DrawerLayout END
+        // hamburger kanan atas
         toolbar.setOnMenuItemClickListener { item ->
             if (item.itemId == R.id.action_drawer) {
                 drawer.openDrawer(GravityCompat.END)
@@ -43,14 +42,14 @@ class MainActivity : AppCompatActivity() {
             } else false
         }
 
-        // bottom nav (sementara ganti text sesuai tab)
+        // bottom nav (sementara: toast biar gak error kalau view content belum siap)
         bottom.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> tv.text = "Home"
-                R.id.nav_wallet -> tv.text = "Wallet"
-                R.id.nav_cart -> tv.text = "Cart"
-                R.id.nav_user -> tv.text = "Account"
-                R.id.nav_settings -> tv.text = "Settings"
+                R.id.nav_home -> Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
+                R.id.nav_wallet -> Toast.makeText(this, "Wallet", Toast.LENGTH_SHORT).show()
+                R.id.nav_cart -> Toast.makeText(this, "Cart", Toast.LENGTH_SHORT).show()
+                R.id.nav_user -> Toast.makeText(this, "Account", Toast.LENGTH_SHORT).show()
+                R.id.nav_settings -> Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
             }
             true
         }
@@ -68,14 +67,13 @@ class MainActivity : AppCompatActivity() {
                     UiPrefs.setDark(this, newVal)
                     drawer.closeDrawer(GravityCompat.END)
 
-                    // transisi smooth (fade)
+                    // smooth transition
                     window.decorView.post {
                         recreate()
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                     }
                     true
                 }
-
                 R.id.menu_logout -> {
                     scope.launch {
                         try { withContext(Dispatchers.IO) { Api.logout(token) } } catch (_: Throwable) {}
@@ -85,7 +83,6 @@ class MainActivity : AppCompatActivity() {
                     }
                     true
                 }
-
                 else -> false
             }
         }
