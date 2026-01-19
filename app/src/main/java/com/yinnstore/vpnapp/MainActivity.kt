@@ -21,19 +21,15 @@ class MainActivity : ComponentActivity() {
 }
 
 sealed class Route(val r: String) {
-    data object Login : Route("login")
-    data object Register : Route("register")
-    data object Main : Route("main")
+    object Login : Route("login")
+    object Main : Route("main")
 }
 
 @Composable
 fun AppNav() {
     val nav = rememberNavController()
 
-    NavHost(
-        navController = nav,
-        startDestination = Route.Login.r
-    ) {
+    NavHost(navController = nav, startDestination = Route.Login.r) {
         composable(Route.Login.r) {
             LoginScreen(
                 onLoginSuccess = {
@@ -41,11 +37,8 @@ fun AppNav() {
                         popUpTo(Route.Login.r) { inclusive = true }
                     }
                 },
-                onGoRegister = { nav.navigate(Route.Register.r) }
+                onGoRegister = { /* TODO */ }
             )
-        }
-        composable(Route.Register.r) {
-            RegisterScreen(onRegisterDone = { nav.popBackStack() })
         }
         composable(Route.Main.r) {
             MainScaffold()

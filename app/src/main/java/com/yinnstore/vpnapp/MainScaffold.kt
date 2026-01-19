@@ -3,16 +3,24 @@ package com.yinnstore.vpnapp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.*
 
-sealed class MainTab(val route: String, val label: String, val icon: ImageVector) {
+sealed class MainTab(
+    val route: String,
+    val label: String,
+    val icon: ImageVector
+) {
     object Home : MainTab("home", "Home", Icons.Filled.Home)
-    object Deposit : MainTab("deposit", "Deposit", Icons.Filled.AttachMoney)
-    object Buy : MainTab("buy", "Beli VPN", Icons.Filled.RocketLaunch)
+    object Deposit : MainTab("deposit", "Deposit", Icons.Filled.Settings)
+    object Buy : MainTab("buy", "Beli VPN", Icons.Filled.Settings)
     object Account : MainTab("account", "Akun", Icons.Filled.Person)
     object Panel : MainTab("panel", "Control", Icons.Filled.Settings)
 }
@@ -36,10 +44,13 @@ fun MainScaffold() {
                     var open by remember { mutableStateOf(false) }
 
                     IconButton(onClick = { open = true }) {
-                        Icon(Icons.Default.Menu, null)
+                        Icon(Icons.Filled.Menu, contentDescription = null)
                     }
 
-                    DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                    DropdownMenu(
+                        expanded = open,
+                        onDismissRequest = { open = false }
+                    ) {
                         DropdownMenuItem(
                             text = {
                                 Text(
@@ -72,7 +83,12 @@ fun MainScaffold() {
                                 popUpTo(nav.graph.startDestinationId)
                             }
                         },
-                        icon = { Icon(it.icon, it.label) },
+                        icon = {
+                            Icon(
+                                imageVector = it.icon,
+                                contentDescription = it.label
+                            )
+                        },
                         label = { Text(it.label) }
                     )
                 }

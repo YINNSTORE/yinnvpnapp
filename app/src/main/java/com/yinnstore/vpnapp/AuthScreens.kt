@@ -4,16 +4,23 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit, onGoRegister: () -> Unit) {
+fun LoginScreen(
+    onLoginSuccess: () -> Unit,
+    onGoRegister: () -> Unit
+) {
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
 
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         Card(
             shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(6.dp),
@@ -25,25 +32,39 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onGoRegister: () -> Unit) {
                 Spacer(Modifier.height(20.dp))
 
                 OutlinedTextField(
-                    email, { email = it },
+                    value = email,
+                    onValueChange = { email = it },
                     label = { Text("Email") },
                     shape = RoundedCornerShape(18.dp),
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(Modifier.height(12.dp))
+
                 OutlinedTextField(
-                    pass, { pass = it },
+                    value = pass,
+                    onValueChange = { pass = it },
                     label = { Text("Password") },
                     shape = RoundedCornerShape(18.dp),
+                    singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(Modifier.height(16.dp))
-                Button(onClick = onLoginSuccess, modifier = Modifier.fillMaxWidth()) {
+
+                Button(
+                    onClick = onLoginSuccess,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text("Masuk")
                 }
-                TextButton(onClick = onGoRegister, modifier = Modifier.fillMaxWidth()) {
+
+                TextButton(
+                    onClick = onGoRegister,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text("Daftar Akun")
                 }
             }
