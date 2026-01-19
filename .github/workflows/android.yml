@@ -19,16 +19,8 @@ jobs:
           java-version: "17"
           cache: "gradle"
 
-      - name: Regenerate Gradle Wrapper (fix)
-        shell: bash
-        run: |
-          set -e
-          GRADLE_VER="8.7"
-          curl -L -o gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VER}-bin.zip"
-          unzip -q gradle.zip
-          ./gradle-${GRADLE_VER}/bin/gradle wrapper --gradle-version ${GRADLE_VER}
-          chmod +x ./gradlew
-          rm -rf gradle.zip gradle-${GRADLE_VER}
+      - name: Grant execute permission
+        run: chmod +x gradlew
 
       - name: Build Debug APK
         run: ./gradlew :app:assembleDebug
