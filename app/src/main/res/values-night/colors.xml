@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="accent_blue">#2F74FF</color>
+    <!-- Brand -->
     <color name="navy">#0B2A4A</color>
     <color name="dark_navy">#061826</color>
 
-    <color name="bg_day">#061826</color>
-    <color name="text_day">#FFFFFF</color>
+    <!-- Accent (sesuai screenshot) -->
+    <color name="primary_accent">#2F7CFF</color>
 
-    <color name="bg_night">#061826</color>
-    <color name="card_night">#0B2436</color>
-    <color name="text_night">#FFFFFF</color>
+    <!-- Basics -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>
