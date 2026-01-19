@@ -1,74 +1,120 @@
-# 🚀 YinnVPN — Modern VPN Account Manager
+# 🌐 YinnVPN — Aplikasi VPN Modern & Ringan untuk Android
 
-YinnVPN adalah aplikasi **Android Native (Kotlin + Jetpack Compose)** untuk pengelolaan dan penjualan akun VPN seperti **SSH, VMESS, VLESS, dan TROJAN** dengan tampilan modern, ringan, dan siap dikembangkan ke sistem produksi.
+**YinnVPN** adalah aplikasi Android modern yang dirancang untuk memudahkan pengguna dalam **mengelola dan membeli akun VPN** seperti **SSH, VMESS, VLESS, dan TROJAN** dengan tampilan yang simpel, cepat, dan nyaman digunakan.
 
-Aplikasi ini dirancang agar:
-- 🔐 Aman (tanpa kredensial VPS di APK)
-- ⚡ Cepat & ringan
-- 🎨 Tampilan modern (Material 3 + Dark Navy Mode)
-- 🤖 Bisa di-build otomatis via GitHub Actions (tanpa PC)
+Aplikasi ini dibuat menggunakan teknologi Android terbaru agar tetap **ringan**, **aman**, dan **stabil** di berbagai perangkat.
 
 ---
 
 ## ✨ Fitur Utama
 
-### 🔑 Autentikasi
-- Login & Register (UI siap, backend-ready)
-- Struktur siap untuk JWT / API Auth
+- 🔐 **Login & Registrasi Akun**
+- 🧭 Navigasi mudah dengan **Bottom Menu**
+- 🌗 **Mode Siang & Mode Malam** (Dark Navy Mode)
+- 🎨 Tampilan modern (Material Design)
+- 📱 Ringan & optimal di HP Android
+- ⚡ Performa stabil & responsif
 
-### 🧭 Navigasi Modern
-- Bottom Navigation (5 menu)
-  - Home
-  - Deposit
-  - Beli VPN
-  - Akun
-  - Control Panel
-- Top App Bar dengan **Hamburger Menu (☰)**
-
-### 🌗 Dark / Light Mode
-- Toggle **Mode Siang & Malam**
-- Dark mode menggunakan **Dark Navy** (bukan abu-abu / hitam)
-- Transisi smooth (tanpa restart aplikasi)
-
-### 🎨 UI/UX
-- Input field **rounded (bulat)**
-- Layout rapi & modern
-- Login / Register tidak kosong, berbasis Card
-- Material 3 + Jetpack Compose
-
-### ⚙️ Build & CI/CD
-- Build otomatis via **GitHub Actions**
-- Input **custom version name**
-- Opsi **upload GitHub Release (true/false)**
-- APK sudah **signed (keystore)**
-- Ukuran APK sudah dioptimasi (minify + shrink + split ABI)
+> ⚠️ Catatan:  
+> Beberapa fitur lanjutan (seperti pembelian VPN otomatis & pembayaran) akan tersedia di versi selanjutnya.
 
 ---
 
-## 📦 Teknologi yang Digunakan
-
-- **Android Native** (Kotlin)
-- **Jetpack Compose**
-- **Material 3**
-- **Navigation Compose**
-- **Gradle + R8**
-- **GitHub Actions (CI/CD)**
+## 📱 Kompatibilitas
+- Android **7.0 (Nougat)** ke atas
+- Mendukung perangkat **ARM 32-bit & 64-bit**
+- Optimal untuk HP spesifikasi rendah hingga tinggi
 
 ---
 
-## 📱 Status Fitur
-
-| Fitur | Status |
-|-----|------|
-| UI & Navigasi | ✅ Selesai |
-| Dark / Light Mode | ✅ Selesai |
-| Build Otomatis (CI) | ✅ Selesai |
-| Signing APK | ✅ Selesai |
-| Optimasi Ukuran APK | ✅ Selesai |
-| Backend API | ⏳ Dalam pengembangan |
-| Provisioning VPN | ⏳ Dalam pengembangan |
-| Payment Gateway | ⏳ Opsional |
+## 🔒 Keamanan
+- Aplikasi **tidak menyimpan password VPS**
+- Semua sistem dirancang agar data pengguna tetap aman
+- Menggunakan standar keamanan Android terbaru
 
 ---
 
-## 🧠 Arsitektur (Singkat)
+## 🧠 Tujuan Aplikasi
+YinnVPN dibuat untuk:
+- Memberikan pengalaman VPN yang **mudah digunakan**
+- Menjadi fondasi aplikasi VPN yang **aman & scalable**
+- Mendukung pengguna yang ingin koneksi jaringan lebih fleksibel
+
+---
+
+## 📄 Lisensi
+
+Proyek ini menggunakan lisensi:
+
+### 📜 **GNU General Public License v3.0 (GPL-3.0)**
+
+Artinya:
+- ✅ Bebas digunakan & dipelajari
+- ✅ Bebas dimodifikasi
+- ❗ Perubahan & distribusi ulang **HARUS** menggunakan lisensi yang sama
+- ❌ Tidak boleh dijadikan software tertutup
+
+Detail lisensi:
+👉 https://www.gnu.org/licenses/gpl-3.0.html
+
+---
+
+## 👤 Credit
+
+**YinnVPN** dikembangkan oleh:
+
+- **Yinn Store**
+- Android & Network Tools Developer
+
+Terima kasih kepada:
+- Komunitas open-source
+- Android Jetpack Team
+- Pengguna yang mendukung pengembangan aplikasi ini
+
+---
+
+## 🔐 Privacy Policy (Kebijakan Privasi)
+
+YinnVPN **menghormati privasi pengguna**.
+
+Kami **tidak mengumpulkan**:
+- Data pribadi sensitif
+- Konten komunikasi pengguna
+- Informasi login VPN secara langsung
+
+Data yang mungkin digunakan:
+- Informasi dasar aplikasi (untuk peningkatan fitur)
+- Data non-pribadi untuk analisis performa
+
+Kami **tidak menjual atau membagikan data pengguna** kepada pihak ketiga.
+
+---
+
+## 📜 Terms of Service (Ketentuan Layanan)
+
+Dengan menggunakan aplikasi YinnVPN, pengguna menyetujui bahwa:
+
+1. Aplikasi digunakan untuk **tujuan yang sah**
+2. Pengguna bertanggung jawab atas aktivitas jaringan masing-masing
+3. Pengembang **tidak bertanggung jawab** atas penyalahgunaan layanan
+4. Fitur dapat berubah atau diperbarui sewaktu-waktu
+5. Aplikasi disediakan **“sebagaimana adanya”**
+
+---
+
+## 🚀 Pengembangan Selanjutnya
+- 💰 Sistem deposit & pembayaran
+- 🌐 Pembelian akun VPN otomatis
+- 📊 Riwayat penggunaan
+- ⚙️ Control panel lanjutan
+
+---
+
+## 📬 Kontak
+Jika ada pertanyaan atau masukan, silakan hubungi melalui GitHub repository ini.
+
+---
+
+⭐ Jika kamu merasa aplikasi ini bermanfaat, jangan lupa beri **star** di repository!
+
+**YinnVPN — Simple. Secure. Modern.**
