@@ -44,13 +44,6 @@ android {
     }
 
     // 🔥 APK lebih kecil
-    splits {
-        abi {
-            enable true
-            reset()
-            include "arm64-v8a", "armeabi-v7a"
-            universalApk false
-        }
     }
 }
 
