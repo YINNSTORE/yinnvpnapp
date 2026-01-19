@@ -25,6 +25,16 @@
             android:layout_marginTop="?attr/actionBarSize"
             app:layout_constraintBottom_toTopOf="@+id/bottomNav"/>
 
+            <TextView
+                android:id="1097 1097id/tvHome"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Home"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNav"
             android:layout_width="match_parent"
