@@ -30,13 +30,6 @@ android {
         jvmTarget = "17"
     }
 
-    signingConfigs {
-        release {
-            storeFile file("keystore.jks")
-            storePassword System.getenv("KEYSTORE_PASSWORD")
-            keyAlias System.getenv("KEY_ALIAS")
-            keyPassword System.getenv("KEY_PASSWORD")
-        }
     }
 
     buildTypes {
@@ -75,4 +68,30 @@ dependencies {
 
     implementation(libs.nav.compose)
     debugImplementation(libs.compose.ui.tooling)
+}
+
+import java.util.Properties
+import java.io.FileInputStream
+
+def signingProps = new Properties()
+def signingFile = rootProject.file("signing.properties")
+if (signingFile.exists()) {
+    signingProps.load(new FileInputStream(signingFile))
+}
+
+android {
+    signingConfigs {
+        release {
+            storeFile file(signingProps["keystore.path"])
+            storePassword signingProps["keystore.password"]
+            keyAlias signingProps["key.alias"]
+            keyPassword signingProps["key.password"]
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
