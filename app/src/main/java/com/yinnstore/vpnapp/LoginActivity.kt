@@ -59,7 +59,10 @@ class LoginActivity : AppCompatActivity() {
                         val token = res.optString("token", "")
                         val exp = res.optString("expires_at", null)
                         if (token.isNotBlank()) session.setToken(token, exp)
-                    session.setProfile(res.optString("role", null))
+                    
+                    val role = res.optString("role", "").trim().ifEmpty { null }
+                    session.setRole(role)
+session.setProfile(res.optString("role", null))
 
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                         finish()

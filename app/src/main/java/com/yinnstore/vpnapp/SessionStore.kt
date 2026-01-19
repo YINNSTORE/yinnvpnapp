@@ -27,3 +27,15 @@ class SessionStore(ctx: Context) {
         sp.edit().clear().apply()
     }
 }
+
+    // ===== Role support (admin/user) =====
+    fun setRole(role: String?) {
+        sp.edit().putString("role", role ?: "").apply()
+    }
+
+    fun role(): String? {
+        val r = sp.getString("role", null)
+        return r?.takeIf { it.isNotBlank() }
+    }
+
+    fun isAdmin(): Boolean = role()?.equals("admin", ignoreCase = true) == true

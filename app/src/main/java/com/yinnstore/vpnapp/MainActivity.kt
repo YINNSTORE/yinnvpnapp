@@ -16,14 +16,9 @@ class MainActivity : AppCompatActivity() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private fun isAdmin(session: SessionStore): Boolean {
-        // PRIORITAS: role dari DB/backend (disarankan)
-        val r = session.role()?.lowercase()?.trim().orEmpty()
-        if (r == "admin") return true
-
-        // fallback sementara (kalau role belum dikirim)
-        val email = session.email()?.lowercase()?.trim().orEmpty()
-        return email == "tesreset660@gmail.com"
+        return session.isAdmin()
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         UiPrefs.apply(this)
