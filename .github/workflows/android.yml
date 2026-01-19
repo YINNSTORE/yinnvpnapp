@@ -17,8 +17,8 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "17"
+          cache: "gradle"
 
-      # ✅ FIX: bikin ulang Gradle Wrapper yang valid
       - name: Regenerate Gradle Wrapper (fix)
         shell: bash
         run: |
