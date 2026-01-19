@@ -4,11 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.*
@@ -37,41 +36,9 @@ fun MainScaffold() {
     )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("YinnVPN") },
-                actions = {
-                    var open by remember { mutableStateOf(false) }
-
-                    IconButton(onClick = { open = true }) {
-                        Icon(Icons.Filled.Menu, contentDescription = null)
-                    }
-
-                    DropdownMenu(
-                        expanded = open,
-                        onDismissRequest = { open = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    if (ThemeState.isDark.value)
-                                        "🌞 Mode Siang"
-                                    else
-                                        "🌙 Mode Malam"
-                                )
-                            },
-                            onClick = {
-                                ThemeState.isDark.value = !ThemeState.isDark.value
-                                open = false
-                            }
-                        )
-                    }
-                }
-            )
-        },
         bottomBar = {
             NavigationBar {
-                val backStack by nav.currentBackStackEntryAsState()
+                val backStack = nav.currentBackStackEntryAsState().value
                 val current = backStack?.destination?.route
 
                 tabs.forEach {
