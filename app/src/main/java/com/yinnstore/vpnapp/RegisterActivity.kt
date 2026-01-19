@@ -1,8 +1,7 @@
 package com.yinnstore.vpnapp
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
@@ -11,7 +10,10 @@ import kotlinx.coroutines.*
 
 class RegisterActivity : AppCompatActivity() {
 
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        UiPrefs.apply(this)
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -19,10 +21,12 @@ class RegisterActivity : AppCompatActivity() {
         val etName = findViewById<TextInputEditText>(R.id.etName)
         val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
         val etPass = findViewById<TextInputEditText>(R.id.etPass)
-        val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
-        val btnBackLogin = findViewById<TextView>(R.id.btnBackLogin)
 
-        btnBackLogin.setOnClickListener { finish() }
+        val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
+        val btnBack = findViewById<MaterialButton>(R.id.btnBackLogin)
+        val pb = findViewById<View>(R.id.pbRegister)
+
+        btnBack.setOnClickListener { finish() }
 
         btnRegister.setOnClickListener {
             val name = etName.text?.toString()?.trim().orEmpty()
@@ -35,29 +39,32 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             btnRegister.isEnabled = false
+            btnBack.isEnabled = false
+            pb.visibility = View.VISIBLE
 
-            CoroutineScope(Dispatchers.IO).launch {
+            scope.launch {
                 try {
-                    val res = Api.register(name, email, pass)
+                    val res = withContext(Dispatchers.IO) { Api.register(name, email, pass) }
                     val ok = res.optBoolean("ok", false)
-
-                    withContext(Dispatchers.Main) {
-                        btnRegister.isEnabled = true
-                        if (!ok) {
-                            Toast.makeText(this@RegisterActivity, res.optString("message", "Gagal"), Toast.LENGTH_SHORT).show()
-                            return@withContext
-                        }
-                        Toast.makeText(this@RegisterActivity, "Akun dibuat, silakan login", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
-                        finish()
+                    if (!ok) {
+                        Toast.makeText(this@RegisterActivity, res.optString("message", "Gagal daftar"), Toast.LENGTH_SHORT).show()
+                        return@launch
                     }
-                } catch (e: Throwable) {
-                    withContext(Dispatchers.Main) {
-                        btnRegister.isEnabled = true
-                        Toast.makeText(this@RegisterActivity, "Server error", Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(this@RegisterActivity, "Akun dibuat, silakan login", Toast.LENGTH_SHORT).show()
+                    finish()
+                } catch (_: Throwable) {
+                    Toast.makeText(this@RegisterActivity, "Server error", Toast.LENGTH_SHORT).show()
+                } finally {
+                    pb.visibility = View.GONE
+                    btnRegister.isEnabled = true
+                    btnBack.isEnabled = true
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 }

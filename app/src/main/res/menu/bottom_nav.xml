@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/nav_home" android:icon="@drawable/ic_home" android:title="Home"/>
-    <item android:id="@+id/nav_deposit" android:icon="@drawable/ic_wallet" android:title="Deposit"/>
-    <item android:id="@+id/nav_buy" android:icon="@drawable/ic_cart" android:title="Beli VPN"/>
-    <item android:id="@+id/nav_account" android:icon="@drawable/ic_user" android:title="Akun"/>
-    <item android:id="@+id/nav_panel" android:icon="@drawable/ic_settings" android:title="Control Panel"/>
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_wallet"
+        android:icon="@drawable/ic_wallet"
+        android:title="Wallet" />
+    <item
+        android:id="@+id/nav_cart"
+        android:icon="@drawable/ic_cart"
+        android:title="Cart" />
+    <item
+        android:id="@+id/nav_user"
+        android:icon="@drawable/ic_user"
+        android:title="User" />
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Setting" />
 </menu>
