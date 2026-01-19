@@ -3,7 +3,17 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/navy</item>
         <item name="colorPrimaryVariant">@color/navy</item>
-        <item name="colorSecondary">@color/navy</item>
+        <item name="colorSecondary">@color/accent_blue</item>
         <item name="android:statusBarColor">@color/navy</item>
+        <item name="android:navigationBarColor">@color/dark_navy</item>
+        <item name="android:windowBackground">@color/bg_day</item>
+
+        <!-- bikin transisi theme lebih halus -->
+        <item name="android:windowAnimationStyle">@style/WindowAnim</item>
+    </style>
+
+    <style name="WindowAnim">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
 </resources>

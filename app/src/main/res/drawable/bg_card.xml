@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#14273B"/>
     <corners android:radius="18dp"/>
-    <padding android:left="16dp" android:top="16dp" android:right="16dp" android:bottom="16dp"/>
+    <solid android:color="@color/card_night"/>
+    <padding android:left="18dp" android:top="18dp" android:right="18dp" android:bottom="18dp"/>
 </shape>

@@ -27,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
         val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
         val etPass = findViewById<TextInputEditText>(R.id.etPass)
         val btnLogin = findViewById<MaterialButton>(R.id.btnLogin)
-        val btnToRegister = findViewById<TextView>(R.id.btnToRegister)
+        val btnToRegister = findViewById<MaterialButton>(R.id.btnToRegister)
 
         btnToRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))

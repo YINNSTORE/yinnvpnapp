@@ -2,9 +2,13 @@ package com.yinnstore.vpnapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
@@ -24,37 +28,50 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // cek token via /me.php (backend kamu)
-        scope.launch {
-            try {
-                val res = withContext(Dispatchers.IO) { Api.me(token) }
-                if (!res.optBoolean("ok", false)) {
-                    session.clear()
-                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                    finish()
-                    return@launch
-                }
-            } catch (_: Throwable) {
-                // kalau jaringan error, biarin user tetap masuk
-            }
+        val drawer = findViewById<DrawerLayout>(R.id.drawer)
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        val nav = findViewById<NavigationView>(R.id.navView)
+        val bottom = findViewById<BottomNavigationView>(R.id.bottomNav)
+
+        // hamburger kanan atas
+        toolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.action_drawer) {
+                drawer.openDrawer(GravityCompat.END)
+                true
+            } else false
         }
 
-        val tv = findViewById<TextView>(R.id.tvPage)
-        val nav = findViewById<BottomNavigationView>(R.id.bottomNav)
-
-        nav.setOnItemSelectedListener { item ->
-            tv.text = when (item.itemId) {
-                R.id.nav_home -> "Home"
-                R.id.nav_deposit -> "Deposit"
-                R.id.nav_buy -> "Beli VPN"
-                R.id.nav_account -> "Akun"
-                R.id.nav_control -> "Control Panel"
-                else -> "Home"
-            }
+        // bottom nav (sementara action basic dulu)
+        bottom.setOnItemSelectedListener { mi ->
+            // nanti kita isi konten real tiap tab
             true
         }
 
-        nav.selectedItemId = R.id.nav_home
+        nav.setNavigationItemSelectedListener { mi ->
+            when (mi.itemId) {
+                R.id.menu_dark_mode -> {
+                    val checked = !mi.isChecked
+                    mi.isChecked = checked
+                    AppCompatDelegate.setDefaultNightMode(
+                        if (checked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                    )
+                    // smooth: recreate biar theme apply (anim fade)
+                    drawer.closeDrawer(GravityCompat.END)
+                    window.decorView.postDelayed({ recreate() }, 120)
+                    true
+                }
+                R.id.menu_logout -> {
+                    scope.launch {
+                        try { withContext(Dispatchers.IO) { Api.logout(token) } } catch (_: Throwable) {}
+                        session.clear()
+                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                        finish()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     override fun onDestroy() {
