@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       version_name:
-        description: "Version name (contoh: 1.0.1)"
+        description: "Version name"
         required: true
         default: "1.0.0"
 
       upload_release:
-        description: "Upload ke GitHub Release?"
+        description: "Upload GitHub Release"
         required: true
         type: choice
         options:
@@ -17,22 +17,20 @@ on:
           - "true"
         default: "false"
 
+# 🔑 WAJIB agar bisa bikin GitHub Release
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # =========================
-      # Checkout
-      # =========================
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # =========================
-      # Java 17 (WAJIB)
-      # =========================
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
@@ -40,32 +38,19 @@ jobs:
           java-version: 17
           cache: gradle
 
-      # =========================
-      # Decode keystore KE app/
-      # =========================
-      - name: Decode release keystore
-        shell: bash
+      - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/release.keystore
           ls -lah app/release.keystore
 
-      # =========================
-      # Verify keystore (ANTI GAGAL DI AKHIR)
-      # =========================
       - name: Verify keystore
-        shell: bash
         run: |
           keytool -list \
             -keystore app/release.keystore \
             -alias "${{ secrets.KEY_ALIAS }}" \
             -storepass "${{ secrets.KEYSTORE_PASSWORD }}" >/dev/null
-          echo "Keystore OK ✅"
 
-      # =========================
-      # Buat signing.properties
-      # =========================
       - name: Create signing.properties
-        shell: bash
         run: |
           cat > signing.properties <<EOF
           keystore.path=release.keystore
@@ -73,43 +58,27 @@ jobs:
           key.alias=${{ secrets.KEY_ALIAS }}
           key.password=${{ secrets.KEY_PASSWORD }}
           EOF
-          echo "signing.properties created"
 
-      # =========================
-      # Set versionName
-      # =========================
       - name: Set versionName
-        shell: bash
         run: |
           sed -i "s/versionName \".*\"/versionName \"${{ inputs.version_name }}\"/" app/build.gradle
 
-      # =========================
-      # Build Release
-      # =========================
-      - name: Assemble Release
-        shell: bash
+      - name: Build Release
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon clean assembleRelease
 
-      # =========================
-      # Upload Artifact
-      # =========================
-      - name: Upload APK artifact
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: app/build/outputs/apk/release/*.apk
 
-      # =========================
-      # Optional GitHub Release
-      # =========================
-      - name: Upload GitHub Release
-        if: ${{ inputs.upload_release == 'true' && success() }}
+      # 🔥 CLEAN GitHub Release
+      - name: Publish GitHub Release
+        if: ${{ inputs.upload_release == 'true' }}
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ inputs.version_name }}
           files: app/build/outputs/apk/release/*.apk
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
