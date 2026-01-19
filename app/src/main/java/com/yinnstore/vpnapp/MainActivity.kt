@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Admin tab dynamic (tanpa XML)
-        if (isAdmin(session) && bottom.menu.findItem(R.id.nav_admin_dynamic) == null) {
+        if (session.isAdmin() && bottom.menu.findItem(R.id.nav_admin_dynamic) == null) {
             bottom.menu.add(0, R.id.nav_admin_dynamic, 999, "Admin")
                 .setIcon(R.drawable.ic_settings) // aman pakai icon yg sudah ada dulu
         }
